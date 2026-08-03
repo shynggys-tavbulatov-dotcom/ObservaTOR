@@ -1,0 +1,7 @@
+Aug 02 15:20:01 [notice] Bootstrapped 10%: Finishing handshake
+Aug 02 15:20:02 [notice] Bootstrapped 80%: Connecting to the Tor network
+Aug 02 15:20:03 [notice] Bootstrapped 100%: Done
+Aug 02 15:21:10 [warn] connection failed to relay
+Aug 02 15:21:15 [warn] temporary network problem
+Aug 02 15:21:20 [err] unable to build circuit
+Aug 02 15:21:25 [notice] Connection failed during retry
