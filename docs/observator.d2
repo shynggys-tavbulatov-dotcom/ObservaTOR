@@ -1,0 +1,35 @@
+direction: right
+
+input: "Tor log file" {
+  shape: document
+}
+
+cli: "ObservaTOR CLI" {
+  main: "main.c"
+}
+
+parser: "Log parser" {
+  read: "Read each line"
+  classify: "Classify event"
+  count: "Update counters"
+
+  read -> classify -> count
+}
+
+stats: "Event statistics" {
+  bootstrap: "Bootstrap events"
+  warnings: "Warnings"
+  errors: "Errors"
+  failures: "Connection failures"
+}
+
+reporter: "Report generator" {
+  terminal: "Terminal summary"
+  json: "JSON export (later)"
+}
+
+input -> cli: "file path"
+cli -> parser: "raw lines"
+parser -> stats: "recognized events"
+stats -> reporter: "counts"
+reporter -> cli: "formatted result"
