@@ -19,3 +19,11 @@ __pycache__/
 
 # Test and tool caches
 .pytest_cache/
+
+# C build artifacts
+build/
+*.o
+
+# Keep sanitized project fixtures
+!examples/*.log
+!tests/*.log
