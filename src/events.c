@@ -79,7 +79,7 @@ static const size_t EVENT_RULE_COUNT =
 
 size_t match_events(
     const char *line,
-    EventType events[],
+    const EventRule *events[],
     size_t event_capacity
 )
 {
@@ -99,7 +99,7 @@ size_t match_events(
                 break;
             }
 
-            events[match_count] = EVENT_RULES[rule_index].type;
+            events[match_count] = &EVENT_RULES[rule_index];
             match_count++;
         }
     }

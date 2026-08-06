@@ -44,7 +44,7 @@ typedef struct {
 
 size_t match_events(
     const char *line,
-    EventType events[],
+    const EventRule *events[],
     size_t event_capacity
 );
 
