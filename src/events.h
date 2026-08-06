@@ -6,42 +6,48 @@
 typedef enum {
     EVENT_UNKNOWN = 0,
 
-    /* Bootstrap */
     EVENT_BOOTSTRAP_PROGRESS,
     EVENT_BOOTSTRAP_COMPLETE,
 
-    /* General */
     EVENT_WARNING,
     EVENT_ERROR,
 
-    /* Network */
     EVENT_CONNECTION_FAILURE,
     EVENT_CIRCUIT,
 
-    /* Hidden services */
     EVENT_ONION_SERVICE
 } EventType;
 
+typedef enum {
+    EVENT_SEVERITY_UNKNOWN = 0,
+    EVENT_SEVERITY_INFO,
+    EVENT_SEVERITY_WARNING,
+    EVENT_SEVERITY_ERROR
+} EventSeverity;
+
+typedef enum {
+    EVENT_SUBSYSTEM_UNKNOWN = 0,
+    EVENT_SUBSYSTEM_BOOTSTRAP,
+    EVENT_SUBSYSTEM_GENERAL,
+    EVENT_SUBSYSTEM_NETWORK,
+    EVENT_SUBSYSTEM_CIRCUIT,
+    EVENT_SUBSYSTEM_ONION_SERVICE
+} EventSubsystem;
+
 typedef struct {
     EventType type;
+    EventSeverity severity;
+    EventSubsystem subsystem;
+    int priority;
     const char *pattern;
 } EventRule;
 
-/*
- * Match one log line against all known event rules.
- *
- * Matching event types are written into the events array.
- * Returns the number of events written.
- */
 size_t match_events(
     const char *line,
     EventType events[],
     size_t event_capacity
 );
 
-/*
- * Return a readable name for an event type.
- */
 const char *event_type_name(EventType type);
 
 #endif

@@ -1,18 +1,77 @@
 #include "events.h"
-
 #include <string.h>
 
 static const EventRule EVENT_RULES[] = {
-    { EVENT_BOOTSTRAP_COMPLETE, "Bootstrapped 100%" },
-    { EVENT_BOOTSTRAP_PROGRESS, "Bootstrapped" },
-    { EVENT_WARNING,            "[warn]" },
-    { EVENT_ERROR,              "[err]" },
-    { EVENT_CONNECTION_FAILURE, "connection failed" },
-    { EVENT_CONNECTION_FAILURE, "Connection failed" },
-    { EVENT_CIRCUIT,            "Circuit" },
-    { EVENT_CIRCUIT,            "circuit" },
-    { EVENT_ONION_SERVICE,      "onion service" },
-    { EVENT_ONION_SERVICE,      "Onion service" }
+    {
+        EVENT_BOOTSTRAP_COMPLETE,
+        EVENT_SEVERITY_INFO,
+        EVENT_SUBSYSTEM_BOOTSTRAP,
+        100,
+        "Bootstrapped 100%"
+    },
+    {
+        EVENT_BOOTSTRAP_PROGRESS,
+        EVENT_SEVERITY_INFO,
+        EVENT_SUBSYSTEM_BOOTSTRAP,
+        10,
+        "Bootstrapped"
+    },
+    {
+        EVENT_WARNING,
+        EVENT_SEVERITY_WARNING,
+        EVENT_SUBSYSTEM_GENERAL,
+        50,
+        "[warn]"
+    },
+    {
+        EVENT_ERROR,
+        EVENT_SEVERITY_ERROR,
+        EVENT_SUBSYSTEM_GENERAL,
+        50,
+        "[err]"
+    },
+    {
+        EVENT_CONNECTION_FAILURE,
+        EVENT_SEVERITY_ERROR,
+        EVENT_SUBSYSTEM_NETWORK,
+        80,
+        "connection failed"
+    },
+    {
+        EVENT_CONNECTION_FAILURE,
+        EVENT_SEVERITY_ERROR,
+        EVENT_SUBSYSTEM_NETWORK,
+        80,
+        "Connection failed"
+    },
+    {
+        EVENT_CIRCUIT,
+        EVENT_SEVERITY_INFO,
+        EVENT_SUBSYSTEM_CIRCUIT,
+        40,
+        "Circuit"
+    },
+    {
+        EVENT_CIRCUIT,
+        EVENT_SEVERITY_INFO,
+        EVENT_SUBSYSTEM_CIRCUIT,
+        40,
+        "circuit"
+    },
+    {
+        EVENT_ONION_SERVICE,
+        EVENT_SEVERITY_INFO,
+        EVENT_SUBSYSTEM_ONION_SERVICE,
+        60,
+        "Onion service"
+    },
+    {
+        EVENT_ONION_SERVICE,
+        EVENT_SEVERITY_INFO,
+        EVENT_SUBSYSTEM_ONION_SERVICE,
+        60,
+        "onion service"
+    }
 };
 
 static const size_t EVENT_RULE_COUNT =
