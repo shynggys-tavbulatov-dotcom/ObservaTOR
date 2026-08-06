@@ -59,13 +59,22 @@ static void print_event(
 )
 {
     printf(
-        "[%03zu] line %-4zu %-20s %s\n",
+        "[%03zu] line %-4zu "
+        "%-8s "
+        "%-14s "
+        "%-20s "
+        "%-15s "
+        "%s\n",
         event_number,
         event->line_number,
+        event_severity_name(event->severity),
+        event_subsystem_name(event->subsystem),
         event_type_name(event->type),
+        event->timestamp,
         event->raw_line
     );
 }
+
 
 void print_report(
     const char *file_path,
@@ -92,7 +101,19 @@ void print_report(
 
     printf("structured events\n");
     printf("=================\n");
-
+printf(
+    "                 "
+    "%-8s "
+    "%-14s "
+    "%-20s "
+    "%-15s "
+    "%s\n",
+    "severity",
+    "subsystem",
+    "event type",
+    "timestamp",
+    "raw event"
+);
     for (event_index = 0;
          event_index < event_count;
          event_index++) {
