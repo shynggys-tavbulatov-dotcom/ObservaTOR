@@ -6,54 +6,6 @@
 
 #define MATCHED_EVENT_CAPACITY 16
 
-static EventSeverity severity_for_event(EventType type)
-{
-    switch (type) {
-        case EVENT_WARNING:
-            return EVENT_SEVERITY_WARNING;
-
-        case EVENT_ERROR:
-        case EVENT_CONNECTION_FAILURE:
-            return EVENT_SEVERITY_ERROR;
-
-        case EVENT_BOOTSTRAP_PROGRESS:
-        case EVENT_BOOTSTRAP_COMPLETE:
-        case EVENT_CIRCUIT:
-        case EVENT_ONION_SERVICE:
-            return EVENT_SEVERITY_INFO;
-
-        case EVENT_UNKNOWN:
-        default:
-            return EVENT_SEVERITY_UNKNOWN;
-    }
-}
-
-static EventSubsystem subsystem_for_event(EventType type)
-{
-    switch (type) {
-        case EVENT_BOOTSTRAP_PROGRESS:
-        case EVENT_BOOTSTRAP_COMPLETE:
-            return EVENT_SUBSYSTEM_BOOTSTRAP;
-
-        case EVENT_WARNING:
-        case EVENT_ERROR:
-            return EVENT_SUBSYSTEM_GENERAL;
-
-        case EVENT_CONNECTION_FAILURE:
-            return EVENT_SUBSYSTEM_NETWORK;
-
-        case EVENT_CIRCUIT:
-            return EVENT_SUBSYSTEM_CIRCUIT;
-
-        case EVENT_ONION_SERVICE:
-            return EVENT_SUBSYSTEM_ONION_SERVICE;
-
-        case EVENT_UNKNOWN:
-        default:
-            return EVENT_SUBSYSTEM_UNKNOWN;
-    }
-}
-
 /*
  * Extract the first three whitespace-separated fields.
  *
@@ -138,7 +90,7 @@ size_t parse_line(
     size_t event_capacity
 )
 {
-    EventType matched_events[MATCHED_EVENT_CAPACITY];
+    const EventRule *matched_rules[MATCHED_EVENT_CAPACITY];
     size_t match_count;
     size_t event_index;
 
@@ -150,10 +102,10 @@ size_t parse_line(
     }
 
     match_count = match_events(
-        line,
-        matched_events,
-        MATCHED_EVENT_CAPACITY
-    );
+    line,
+    matched_rules,
+    MATCHED_EVENT_CAPACITY
+);
 
     if (match_count > event_capacity) {
         match_count = event_capacity;
@@ -165,15 +117,13 @@ size_t parse_line(
 
         ParsedEvent *event = &events[event_index];
 
-        event->type = matched_events[event_index];
+        const EventRule *rule = matched_rules[event_index];
 
-        event->severity =
-            severity_for_event(event->type);
+event->type = rule->type;
+event->severity = rule->severity;
+event->subsystem = rule->subsystem;
 
-        event->subsystem =
-            subsystem_for_event(event->type);
-
-        event->line_number = line_number;
+event->line_number = line_number;
 
         extract_timestamp(
             line,
