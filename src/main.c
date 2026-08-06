@@ -1,8 +1,10 @@
-#include "parser.h"
+#include "reader.h"
 #include "report.h"
 
 #include <stdio.h>
 #include <string.h>
+
+#define MAX_STORED_EVENTS 4096
 
 static void print_help(const char *program_name)
 {
@@ -18,8 +20,8 @@ static void print_help(const char *program_name)
 
 int main(int argc, char *argv[])
 {
-    ObservatorStats stats;
-
+   ParsedEvent events[MAX_STORED_EVENTS];
+   ReaderResult reader_result;
     if (argc == 2 &&
         (strcmp(argv[1], "--help") == 0 ||
          strcmp(argv[1], "-h") == 0)) {
@@ -40,14 +42,27 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (parse_log_file(argv[1], &stats) != 0) {
-        fprintf(stderr,
-                "error: could not read log file: %s\n",
-                argv[1]);
-        return 1;
-    }
+   if (read_log_file(
+        argv[1],
+        events,
+        MAX_STORED_EVENTS,
+        &reader_result
+    ) != 0) {
 
-    print_report(argv[1], &stats);
+    fprintf(
+        stderr,
+        "error: could not read log file: %s\n",
+        argv[1]
+    );
 
-    return 0;
+    return 1;
+}
+
+print_report(
+    argv[1],
+    events,
+    reader_result.event_count,
+    &reader_result
+);
+return 0;
 }

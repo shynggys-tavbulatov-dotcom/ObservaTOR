@@ -1,50 +1,75 @@
 #include "parser.h"
+#include "events.h"
 
-#include <stdio.h>
 #include <string.h>
 
-int parse_log_file(const char *file_path, ObservatorStats *stats)
+size_t parse_line(
+    const char *line,
+    size_t line_number,
+    ParsedEvent events[],
+    size_t event_capacity
+)
 {
-    FILE *log_file;
-    char line[1024];
+    EventType matched_events[16];
+    size_t match_count;
+    size_t event_index;
 
-    if (file_path == NULL || stats == NULL) {
-        return -1;
+    if (line == NULL ||
+        events == NULL ||
+        event_capacity == 0) {
+
+        return 0;
     }
 
-    stats->total_lines = 0;
-    stats->bootstrap_events = 0;
-    stats->warnings = 0;
-    stats->errors = 0;
-    stats->connection_failures = 0;
+    match_count = match_events(
+        line,
+        matched_events,
+        sizeof(matched_events) / sizeof(matched_events[0])
+    );
 
-    log_file = fopen(file_path, "r");
-
-    if (log_file == NULL) {
-        return -1;
+    /*
+     * Do not write beyond the caller's output array.
+     */
+    if (match_count > event_capacity) {
+        match_count = event_capacity;
     }
 
-    while (fgets(line, sizeof(line), log_file) != NULL) {
-        stats->total_lines++;
+    for (event_index = 0;
+         event_index < match_count;
+         event_index++) {
 
-        if (strstr(line, "Bootstrapped") != NULL) {
-            stats->bootstrap_events++;
-        }
+        events[event_index].type =
+            matched_events[event_index];
 
-        if (strstr(line, "[warn]") != NULL) {
-            stats->warnings++;
-        }
+        events[event_index].line_number =
+            line_number;
 
-        if (strstr(line, "[err]") != NULL) {
-            stats->errors++;
-        }
+        /*
+         * Copy the original log line into the event.
+         *
+         * snprintf could also be used, but this form makes
+         * the truncation and terminating null byte explicit.
+         */
+        strncpy(
+            events[event_index].raw_line,
+            line,
+            sizeof(events[event_index].raw_line) - 1
+        );
 
-        if (strstr(line, "connection failed") != NULL ||
-            strstr(line, "Connection failed") != NULL) {
-            stats->connection_failures++;
-        }
+        events[event_index]
+            .raw_line[
+                sizeof(events[event_index].raw_line) - 1
+            ] = '\0';
+
+        /*
+         * fgets normally leaves the newline in the string.
+         * Remove it so reports stay on one clean line.
+         */
+        events[event_index]
+            .raw_line[
+                strcspn(events[event_index].raw_line, "\r\n")
+            ] = '\0';
     }
 
-    fclose(log_file);
-    return 0;
+    return match_count;
 }

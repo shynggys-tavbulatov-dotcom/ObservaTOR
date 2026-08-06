@@ -1,14 +1,23 @@
 #ifndef OBSERVATOR_PARSER_H
 #define OBSERVATOR_PARSER_H
 
-typedef struct {
-    unsigned int total_lines;
-    unsigned int bootstrap_events;
-    unsigned int warnings;
-    unsigned int errors;
-    unsigned int connection_failures;
-} ObservatorStats;
+#include "structured_event.h"
 
-int parse_log_file(const char *file_path, ObservatorStats *stats);
+#include <stddef.h>
+
+/*
+ * Parse one log line into structured events.
+ *
+ * One line may produce multiple events.
+ *
+ * Returns the number of ParsedEvent objects written
+ * into the events array.
+ */
+size_t parse_line(
+    const char *line,
+    size_t line_number,
+    ParsedEvent events[],
+    size_t event_capacity
+);
 
 #endif
